@@ -23,3 +23,10 @@ body {
     height: 30px;
     background-color: brown;
 }
+
+.arrow-down {
+    width: 30px;
+    height: 30px;
+    position: absolute;
+    background-color: rgb(37, 207, 14);
+}
