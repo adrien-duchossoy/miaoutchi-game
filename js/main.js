@@ -103,13 +103,31 @@ const detectCollision = () => {
         ) {
             arrow.arrowElm.style.backgroundColor = 'red'
             arrow.isColliding = true
-            console.log(arrow.isColliding)
         } else if (
             arrow.positionY > staticPosition[arrow.columnIndex].positionBottom
         ) {
             arrow.arrowElm.style.backgroundColor = ''
             arrow.isColliding = false
-            console.log('positionY:', arrow.positionY, 'positionY + height:', arrow.positionY + arrow.height, 'positionBottom:', staticPosition[arrow.columnIndex].positionBottom)
+            //console.log('positionY:', arrow.positionY, 'positionY + height:', arrow.positionY + arrow.height, 'positionBottom:', staticPosition[arrow.columnIndex].positionBottom)
+        }
+    })
+}
+
+const collisionOnInput = (columnOfArrow) => {
+    return fallingArrows.find((arrow) => arrow.columnIndex === columnOfArrow && arrow.isColliding === true)
+}
+
+const playerInput = () => {
+    const keyPress = document.addEventListener("keydown", (event) => {
+        
+        if (event.code === "ArrowLeft") {
+            console.log(collisionOnInput(columnMapping['left']))
+        } else if (event.code === "ArrowUp") {
+            console.log(collisionOnInput(columnMapping['top']))
+        } else if (event.code === "ArrowDown") {
+            console.log(collisionOnInput(columnMapping['bottom']))
+        } else if (event.code === "ArrowRight") {
+            console.log(collisionOnInput(columnMapping['right']))
         }
     })
 }
@@ -128,3 +146,4 @@ const detectCollision = () => {
 
 fall()
 detectCollision()
+playerInput()
