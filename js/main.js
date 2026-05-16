@@ -65,12 +65,14 @@ const arrowDirection = ['left', 'top', 'bottom', 'right']
 
 arrowDirection.forEach((direction) => {
     setTimeout(() => {
-        function spawnArrow () {
-            const newArrow = new Arrow(direction)
-            fallingArrows.push(newArrow)
-            setTimeout(spawnArrow, Math.random() * 10000 + 5000)
-        }
-        spawnArrow()
+            function spawnArrow () {
+                if (fallingArrows.length < 2) {
+                    const newArrow = new Arrow(direction)
+                    fallingArrows.push(newArrow)
+                }
+                    setTimeout(spawnArrow, Math.random() * 10000 + 5000)
+            }
+            spawnArrow()
     }, Math.random() * 10000 + 3000)
 })
 
@@ -82,7 +84,6 @@ const fall = () => {
         if (arrow.positionY > boardHeight) {
             fallingArrows.splice(arrowIndex, 1)
             arrow.arrowElm.remove()
-            console.log('arrow deleted')
         }
     })
         requestAnimationFrame( () => fall())
