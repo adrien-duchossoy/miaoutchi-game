@@ -11,9 +11,10 @@ class Arrow {
         this.width = 30
         this.height = 30
         this.positionX = 10
-        this.positionY = 0 - this.height //had to hard code the -50 otherwise RFA started before DOM
+        this.positionY = 0 - this.height
         this.columnIndex = columnMapping[columnIndex]
         this.staticPositionLeft = staticPositionLeft
+        this.isColliding = false
         this.arrowElm = null
 
         this.createArrow()
@@ -95,8 +96,21 @@ const fall = () => {
 
 const detectCollision = () => {
     fallingArrows.forEach((arrow) => {
-        console.log(staticPosition[arrow.columnIndex])
-        console.log(arrow)
+
+        if(
+            arrow.positionY < staticPosition[arrow.columnIndex].positionTop &&
+            arrow.positionY + arrow.height > staticPosition[arrow.columnIndex].positionTop
+        ) {
+            arrow.arrowElm.style.backgroundColor = 'red'
+            arrow.isColliding = true
+            console.log(arrow.isColliding)
+        } else if (
+            arrow.positionY > staticPosition[arrow.columnIndex].positionBottom
+        ) {
+            arrow.arrowElm.style.backgroundColor = ''
+            arrow.isColliding = false
+            console.log('positionY:', arrow.positionY, 'positionY + height:', arrow.positionY + arrow.height, 'positionBottom:', staticPosition[arrow.columnIndex].positionBottom)
+        }
     })
 }
 
