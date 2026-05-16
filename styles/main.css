@@ -1,0 +1,25 @@
+body {
+    margin: 0;
+    padding: 0;
+}
+
+#board {
+    width: 100vw;
+    height: 100vh;
+    background-color: antiquewhite;
+    position: relative;
+}
+
+#arrow-container {
+    display:flex;
+    justify-content: space-evenly;
+    position: absolute;
+    top: 33vh;
+    width: 100%;
+}
+
+.static-arrow {
+    width: 30px;
+    height: 30px;
+    background-color: brown;
+}
