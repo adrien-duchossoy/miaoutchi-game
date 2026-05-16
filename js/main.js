@@ -61,26 +61,16 @@ class ArrowStatic {
 
 const fallingArrows = []
 
-const spawnArrowLeft = () => {
-    let newArrowLeft = new Arrow('left')
-    fallingArrows.push(newArrowLeft)
-    setTimeout(spawnArrowLeft, Math.random() * 10000 + 5000)
-}
-const spawnArrowTop = () => {
-    let newArrowTop = new Arrow('top')
-    fallingArrows.push(newArrowTop)
-    setTimeout(spawnArrowTop, Math.random() * 10000 + 5000)
-}
-const spawnArrowBottom = () => {
-    let newArrowBottom = new Arrow('bottom')
-    fallingArrows.push(newArrowBottom)
-    setTimeout(spawnArrowBottom, Math.random() * 10000 + 5000)
-}
-const spawnArrowRight = () => {
-    let newArrowRight = new Arrow('right')
-    fallingArrows.push(newArrowRight)
-    setTimeout(spawnArrowRight, Math.random() * 10000 + 5000)
-}
+const arrowDirection = ['left', 'top', 'bottom', 'right']
+
+arrowDirection.forEach((direction) => {
+    function spawnArrow () {
+        const newArrow = new Arrow(direction)
+        fallingArrows.push(newArrow)
+        setTimeout(spawnArrow, Math.random() * 10000 + 5000)
+    }
+    spawnArrow()
+})
 
 const fall = () => {
     fallingArrows.forEach ((arrow) => {
@@ -90,8 +80,4 @@ const fall = () => {
         requestAnimationFrame( () => fall())
 }
 
-spawnArrowLeft()
-spawnArrowTop()
-spawnArrowBottom()
-spawnArrowRight()
 fall()
