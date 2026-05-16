@@ -64,12 +64,14 @@ const fallingArrows = []
 const arrowDirection = ['left', 'top', 'bottom', 'right']
 
 arrowDirection.forEach((direction) => {
-    function spawnArrow () {
-        const newArrow = new Arrow(direction)
-        fallingArrows.push(newArrow)
-        setTimeout(spawnArrow, Math.random() * 10000 + 5000)
-    }
-    spawnArrow()
+    setTimeout(() => {
+        function spawnArrow () {
+            const newArrow = new Arrow(direction)
+            fallingArrows.push(newArrow)
+            setTimeout(spawnArrow, Math.random() * 10000 + 5000)
+        }
+        spawnArrow()
+    }, Math.random() * 10000 + 3000)
 })
 
 const fall = () => {
