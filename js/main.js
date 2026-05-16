@@ -64,7 +64,22 @@ const fallingArrows = []
 const spawnArrowLeft = () => {
     let newArrowLeft = new Arrow('left')
     fallingArrows.push(newArrowLeft)
-    setTimeout(spawnArrowLeft, Math.random() * 5000 + 3000)
+    setTimeout(spawnArrowLeft, Math.random() * 10000 + 5000)
+}
+const spawnArrowTop = () => {
+    let newArrowTop = new Arrow('top')
+    fallingArrows.push(newArrowTop)
+    setTimeout(spawnArrowTop, Math.random() * 10000 + 5000)
+}
+const spawnArrowBottom = () => {
+    let newArrowBottom = new Arrow('bottom')
+    fallingArrows.push(newArrowBottom)
+    setTimeout(spawnArrowBottom, Math.random() * 10000 + 5000)
+}
+const spawnArrowRight = () => {
+    let newArrowRight = new Arrow('right')
+    fallingArrows.push(newArrowRight)
+    setTimeout(spawnArrowRight, Math.random() * 10000 + 5000)
 }
 
 const fall = () => {
@@ -76,4 +91,7 @@ const fall = () => {
 }
 
 spawnArrowLeft()
+spawnArrowTop()
+spawnArrowBottom()
+spawnArrowRight()
 fall()
