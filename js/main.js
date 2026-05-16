@@ -4,7 +4,7 @@ class Arrow {
         this.width = 30
         this.height = 30
         this.positionX = 10
-        this.positionY = -50 - this.height
+        this.positionY = 0 - this.height //had to hard code the -50 otherwise RFA started before DOM
         this.columnIndex = columnIndex
         this.arrowElm = null
         this.arrowsPositionLeft = []
@@ -12,7 +12,6 @@ class Arrow {
         this.getStaticArrowsPosition()
         this.createArrow()
         this.updateUI()
-        this.fall()
     }
     getStaticArrowsPosition () {
         const arrows = document.querySelectorAll('.static-arrow')
@@ -20,7 +19,9 @@ class Arrow {
             let position = arrow.getBoundingClientRect()
             this.arrowsPositionLeft.push({
                 arrow: arrow.getAttribute('id'),
-                positionLeft: position.left
+                positionLeft: position.left,
+                positionTop: position.top,
+                positionBottom: position.bottom,
             })
         })
     }
@@ -47,12 +48,6 @@ class Arrow {
         this.arrowElm.style.width = `${this.width}px`
         this.arrowElm.style.heigth = `${this.height}px`
     }
-        fall () {
-        this.positionY++
-        this.updateUI()
-        requestAnimationFrame( () => this.fall())
-    }
-
 }
 
 class ArrowStatic {
@@ -64,9 +59,21 @@ class ArrowStatic {
     }
 }
 
-/*setInterval(() => {
-    new Arrow()
-}, 3000)*/
+const fallingArrows = []
 
-new Arrow('left')
-new Arrow('right')
+const spawnArrowLeft = () => {
+    let newArrowLeft = new Arrow('left')
+    fallingArrows.push(newArrowLeft)
+    setTimeout(spawnArrowLeft, Math.random() * 5000 + 3000)
+}
+
+const fall = () => {
+    fallingArrows.forEach ((arrow) => {
+        arrow.positionY++
+        arrow.updateUI()
+    })
+        requestAnimationFrame( () => fall())
+}
+
+spawnArrowLeft()
+fall()
