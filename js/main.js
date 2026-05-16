@@ -75,9 +75,15 @@ arrowDirection.forEach((direction) => {
 })
 
 const fall = () => {
-    fallingArrows.forEach ((arrow) => {
+    fallingArrows.forEach ((arrow, arrowIndex) => {
         arrow.positionY++
         arrow.updateUI()
+        const boardHeight = document.getElementById('board').getBoundingClientRect().height
+        if (arrow.positionY > boardHeight) {
+            fallingArrows.splice(arrowIndex, 1)
+            arrow.arrowElm.remove()
+            console.log('arrow deleted')
+        }
     })
         requestAnimationFrame( () => fall())
 }

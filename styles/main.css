@@ -8,6 +8,7 @@ body {
     height: 100vh;
     background-color: antiquewhite;
     position: relative;
+    overflow: hidden;
 }
 
 #arrow-container {
