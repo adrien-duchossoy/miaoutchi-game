@@ -101,14 +101,13 @@ const detectCollision = () => {
             arrow.positionY < staticPosition[arrow.columnIndex].positionTop &&
             arrow.positionY + arrow.height > staticPosition[arrow.columnIndex].positionTop
         ) {
-            arrow.arrowElm.style.backgroundColor = 'red'
+            arrow.arrowElm.style.backgroundColor = 'blue'
             arrow.isColliding = true
         } else if (
             arrow.positionY > staticPosition[arrow.columnIndex].positionBottom
         ) {
             arrow.arrowElm.style.backgroundColor = ''
             arrow.isColliding = false
-            //console.log('positionY:', arrow.positionY, 'positionY + height:', arrow.positionY + arrow.height, 'positionBottom:', staticPosition[arrow.columnIndex].positionBottom)
         }
     })
 }
@@ -131,18 +130,6 @@ const playerInput = () => {
         }
     })
 }
-
-
-    /*
-    if(
-        player.positionX < obstacleInstance.positionX + obstacleInstance.width &&
-        player.positionX + player.width > obstacleInstance.positionX &&
-        staticPosition.arrow.columnIndex < obstacleInstance.positionY + obstacleInstance.height &&
-        staticPosition.top + player.height > obstacleInstance.positionY
-    ){
-
-    }
-}*/
 
 fall()
 detectCollision()
