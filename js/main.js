@@ -6,10 +6,20 @@ const columnMapping = {
     right: 3,
 }
 
+const keyMapping = {
+    ArrowLeft: 0,
+    ArrowUp: 1,
+    ArrowDown: 2,
+    ArrowRight: 3,
+}
+
 class Arrow {
+    static width = 30
+    static height = 30
+
     constructor (columnIndex, staticPositionLeft) {
-        this.width = 30
-        this.height = 30
+        this.width = Arrow.width
+        this.height = Arrow.height
         this.positionX = 10
         this.positionY = 0 - this.height
         this.columnIndex = columnMapping[columnIndex]
@@ -22,7 +32,8 @@ class Arrow {
     }
     createArrow () {
         this.arrowElm = document.createElement('div')
-        this.arrowElm.className = 'arrow-down'
+        this.arrowElm.className = 'falling-arrow'
+        this.arrowElm.style.zIndex = '0'
         const board = document.getElementById('board')
         this.arrowElm.style.left = `${this.staticPositionLeft}px`
         board.appendChild(this.arrowElm)  
@@ -47,6 +58,7 @@ const getStaticArrowsPosition = () => {
                 positionLeft: position.left,
                 positionTop: position.top,
                 positionBottom: position.bottom,
+                width: position.width,
             })
         })
         return staticArrowsPosition
@@ -61,7 +73,8 @@ const arrowColumn = ['left', 'top', 'bottom', 'right']
 const spawnArrow = (column) => {
     if (fallingArrows.length < 2) {
         const positionLeftStaticArrows = staticPosition[columnMapping[column]].positionLeft
-        const newArrow = new Arrow(column, positionLeftStaticArrows)
+        const widthStaticArrows = staticPosition[columnMapping[column]].width
+        const newArrow = new Arrow(column, (positionLeftStaticArrows + (widthStaticArrows / 2) - (Arrow.width / 2)))
         fallingArrows.push(newArrow)
     }
 }
@@ -75,15 +88,16 @@ const scheduleSpawn = (column) => {
 }
 
 arrowColumn.forEach((column) => {
-    const initialDelay = Math.random() * 4000 + 1000
+    const initialDelay = Math.random() * 2000 + 1000
     setTimeout(() => scheduleSpawn(column), initialDelay)
 })
 
 
 const boardHeight = document.getElementById('board').getBoundingClientRect().height
+
 const fall = () => {
-    fallingArrows.forEach ((arrow, arrowIndex) => {
-        arrow.positionY++
+    fallingArrows.forEach((arrow, arrowIndex) => {
+        arrow.positionY += 1.2
         arrow.updateUI()
         if (arrow.positionY > boardHeight) {
             fallingArrows.splice(arrowIndex, 1)
@@ -91,7 +105,7 @@ const fall = () => {
         }
     })
     detectCollision()
-        requestAnimationFrame( () => fall())
+    requestAnimationFrame(() => fall())
 }
 
 const detectCollision = () => {
@@ -116,20 +130,26 @@ const collisionOnInput = (columnOfArrow) => {
     return fallingArrows.find((arrow) => arrow.columnIndex === columnOfArrow && arrow.isColliding === true)
 }
 
+let score = 0
+
+const updateScore = () => {
+    const displayedScore = document.getElementById('score-value').textContent = score
+}
+
 const playerInput = () => {
     const keyPress = document.addEventListener("keydown", (event) => {
-        
-        if (event.code === "ArrowLeft") {
-            console.log(collisionOnInput(columnMapping['left']))
-        } else if (event.code === "ArrowUp") {
-            console.log(collisionOnInput(columnMapping['top']))
-        } else if (event.code === "ArrowDown") {
-            console.log(collisionOnInput(columnMapping['bottom']))
-        } else if (event.code === "ArrowRight") {
-            console.log(collisionOnInput(columnMapping['right']))
-        }
+        const columnIndex = keyMapping[event.code]
+        const staticArrowID = staticPosition[columnIndex].arrow
+        const staticArrow = document.getElementById(`${staticArrowID}`)
+        staticArrow.classList.add("is-pressed")
+        staticArrow.onanimationend = () => staticArrow.classList.remove("is-pressed")
+        if (!collisionOnInput(columnIndex)) return
+        score++
+        updateScore()
     })
 }
+
+
 
 fall()
 detectCollision()
