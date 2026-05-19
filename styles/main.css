@@ -3,10 +3,16 @@
     src: url("../fonts/bringbold-nineties.otf") format("opentype");
 }
 
+@font-face {
+    font-family: "Bodoni";
+    src: url("../fonts/bauer-bodoni.otf") format("opentype");
+}
+
 body {
     margin: 0;
     padding: 0;
-    font-family: "Bringbold", sans-serif;
+    font-family: "Bodoni", serif;
+    font-size: 2rem;
 }
 
 #board {
@@ -29,17 +35,30 @@ body {
     display:flex;
     justify-content: space-evenly;
     position: absolute;
-    top: 33vh;
+    top: 50vh;
     width: 100%;
 }
 
 #point-container {
     position: absolute;
-    top: 0;
+    top: 30;
     right: 0;
-    width: 15%;
-    height: 8%;
-    background-color: blueviolet;
+    left: 0;
+    width: 30%;
+    height: 15%;
+    margin: 0 auto;
+    z-index: 10;
+    
+}
+
+#score, #score-value {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    font-size: 6rem;
+    color: #F3C3E5;
+    text-shadow: #765375 0 0 3px;
 }
 
 .static-arrow {
@@ -57,17 +76,15 @@ body {
     width: 30px;
     height: 30px;
     position: absolute;
-    background-color: rgb(37, 207, 14);
 }
 
-.static-arrow img {
+.arrow-icon {
     position: absolute;
     width: 200px;
     height: 200px;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    pointer-events: none;
 }
 
 #arrow-left-img {
@@ -83,8 +100,8 @@ body {
 }
 
 .blob-1 {
-    width: 900px;
-    height: 300px;
+    width: 90vw;
+    height: 40vh;
     background: #F4C9E3;
     top: -30%;
     left: -30%;
@@ -92,17 +109,17 @@ body {
 }
 
 .blob-2 {
-    width: 250px;
-    height: 550px;
+    width: 40vw;
+    height: 85vh;
     background: #F2AE98;
     bottom: -20%;
-    right: 30%;
+    right: 5%;
     animation-delay: -2s;
 }
 
 .blob-3 {
-    width: 250px;
-    height: 650px;
+    width: 70vw;
+    height: 65vh;
     background: #EE72C5;
     top: -60%;
     right: 0;
@@ -110,8 +127,8 @@ body {
 }
 
 .blob-4 {
-    width: 500px;
-    height: 300px;
+    width: 70vw;
+    height: 40vh;
     background: #F3AED9;
     bottom: -10%;
     left: -10%;
