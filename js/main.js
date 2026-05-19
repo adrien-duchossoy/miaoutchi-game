@@ -178,15 +178,26 @@ const getScoreFromZone = (zone) => {
 }
 
 const playerInput = () => {
-    const keyPress = document.addEventListener("keydown", (event) => {
+    document.addEventListener("keydown", (event) => {
         const columnIndex = keyMapping[event.code]
-        const arrow = collisionOnInput(columnIndex)
         const staticArrowID = staticPosition[columnIndex].arrow
         const staticArrow = document.getElementById(`${staticArrowID}`)
+
         staticArrow.classList.add("is-pressed")
-        staticArrow.onanimationend = () => staticArrow.classList.remove("is-pressed")
+        setTimeout(() => staticArrow.classList.remove("is-pressed"), 300)
+
+        const arrow = collisionOnInput(columnIndex)
         if (!arrow) return
+
+        const isWin = ['ok_early', 'perfect', 'ok_late'].includes(arrow.collisionZone)
+        if (isWin) {
+            staticArrow.classList.add("is-a-win")
+            setTimeout(() => staticArrow.classList.remove("is-a-win"), 300)
+        }
+
         arrow.hasBeenHit = true
+        fallingArrows.splice(fallingArrows.indexOf(arrow), 1)
+        arrow.arrowElm.remove()
         score += getScoreFromZone(arrow.collisionZone)
         updateScore()
     })

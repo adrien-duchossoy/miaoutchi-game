@@ -8,10 +8,16 @@
     src: url("../fonts/bauer-bodoni.otf") format("opentype");
 }
 
+.electrolize-regular {
+  font-family: "Electrolize", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+
 body {
     margin: 0;
     padding: 0;
-    font-family: "Bodoni", serif;
     font-size: 2rem;
 }
 
@@ -31,34 +37,65 @@ body {
     animation: blobmove 5s infinite alternate ease-in-out;
 }
 
+#background-logo {
+    position: absolute;
+    width: 80%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0.08;
+}
+
 #arrow-container {
     display:flex;
     justify-content: space-evenly;
     position: absolute;
-    top: 50vh;
+    top: 80vh;
     width: 100%;
+}
+
+#lane-container {
+    display: flex;
+    justify-content: space-evenly;
+    position: absolute;
+    width: 100%;
+
 }
 
 #point-container {
     position: absolute;
-    top: 30;
+    line-height: 0.8;
     right: 0;
-    left: 0;
-    width: 30%;
-    height: 15%;
+    width: 15%;
     margin: 0 auto;
-    z-index: 10;
-    
 }
 
-#score, #score-value {
+#score {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
+    justify-content: flex-end;
+    align-items: flex-start;
+    padding-right: 20px;
+    font-family: "Bodoni";
     font-size: 6rem;
     color: #F3C3E5;
     text-shadow: #765375 0 0 3px;
+
+}
+
+#score-text {
+    font-family: "Electrolize";
+    font-size: 1.2rem;
+    color: #765375;
+    text-align: right;
+    padding-top: 20px;
+    padding-right: 20px;
+
+}
+
+.lane-indiv {
+    height: 100vh;
+    width: 10vw;
+    background-color: #F2AE98;
 }
 
 .static-arrow {
@@ -70,6 +107,14 @@ body {
 
 .is-pressed{
     animation: static-arrow-scale 0.3s 1 forwards ease-in-out;
+}
+
+.is-a-win {
+    animation: static-arrow-win 0.3s 1 forwards ease-in-out;
+}
+
+.is-pressed.is-a-win {
+    animation: static-arrow-scale 0.3s forwards ease-in-out, static-arrow-win 0.2s forwards ease-in-out;
 }
 
 .falling-arrow {
@@ -144,4 +189,10 @@ body {
     0%   { transform: scale(1); }
     50%  { transform: scale(1.15); }
     100% { transform: scale(1); }
+}
+
+@keyframes static-arrow-win {
+    0%   { filter: drop-shadow(0 0 0px #F9CB5E); }
+    50%  { filter: drop-shadow(0 0 60px #F9CB5E); }
+    100% { filter: drop-shadow(0 0 0px #F9CB5E); }
 }
