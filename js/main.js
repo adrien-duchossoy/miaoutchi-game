@@ -73,7 +73,10 @@ const getStaticArrowsPosition = () => {
         return staticArrowsPosition
     }
 
-const staticPosition = getStaticArrowsPosition()
+let staticPosition = []
+window.addEventListener('DOMContentLoaded', () => {
+    staticPosition = getStaticArrowsPosition()
+})
 
 
 const fallingArrows = []
@@ -132,7 +135,7 @@ let score = 0
 const detectCollision = () => {
     fallingArrows.forEach((arrow) => {
 
-        let collisionProgress = ((arrow.positionY + arrow.height) - staticPosition[arrow.columnIndex].positionTop) / staticPosition[arrow.columnIndex].height
+        let collisionProgress = ((arrow.positionY + arrow.height / 2) - staticPosition[arrow.columnIndex].positionTop) / staticPosition[arrow.columnIndex].height
         let previousZone = arrow.collisionZone
         if(collisionProgress >= -0.5 && collisionProgress < 0) {
             arrow.collisionZone='early'
@@ -205,5 +208,4 @@ const playerInput = () => {
 
 
 requestAnimationFrame(fall)
-detectCollision()
 playerInput()
