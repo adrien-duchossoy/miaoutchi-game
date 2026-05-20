@@ -39,8 +39,7 @@ class Arrow {
         arrowImgElm.classList.add('arrow-icon')
         arrowImgElm.src = './img/icons/arrow-solidyellow.svg'
         const rotationIndex = [-90, 0, 180, 90]
-        arrowImgElm.style.transform = `translate(-50%, -50%)
-                                    rotate(${rotationIndex[this.columnIndex]}deg)`
+        arrowImgElm.style.transform = `translate(-50%, -50%) rotate(${rotationIndex[this.columnIndex]}deg)`
         this.arrowElm.appendChild(arrowImgElm)
         const board = document.getElementById('board')
         this.arrowElm.style.left = `${this.staticPositionLeft}px`
@@ -48,7 +47,7 @@ class Arrow {
     }
 
     updateUI () {
-        this.arrowElm.style.top = `${this.positionY}px`
+        this.arrowElm.style.transform = `translateY(${this.positionY}px)`
         this.arrowElm.style.width = `${this.width}px`
         this.arrowElm.style.height = `${this.height}px`
     }
@@ -170,7 +169,7 @@ const updateScore = () => {
 
 const getScoreFromZone = (zone) => {
     if(zone === 'early'){
-        return -10
+        return 10
     } else if (zone === 'ok_early' || zone === 'ok_late'){
         return 50
     } else if (zone === 'perfect') {
