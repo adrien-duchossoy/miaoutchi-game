@@ -8,17 +8,10 @@
     src: url("../fonts/bauer-bodoni.otf") format("opentype");
 }
 
-.electrolize-regular {
-  font-family: "Electrolize", sans-serif;
-  font-weight: 400;
-  font-style: normal;
-}
-
-
 body {
     margin: 0;
     padding: 0;
-    font-size: 2rem;
+    font-size: 16px; /* base rem = 16px */
 }
 
 #board {
@@ -37,6 +30,42 @@ body {
     animation: blobmove 5s infinite alternate ease-in-out;
     will-change: transform;
     transform: translateZ(0);
+}
+
+.blob-1 {
+    width: 90vw;
+    height: 40vh;
+    background: #F4C9E3;
+    top: -30%;
+    left: -30%;
+    animation-delay: 0s;
+}
+
+.blob-2 {
+    width: 40vw;
+    height: 85vh;
+    background: #F2AE98;
+    bottom: -20%;
+    right: 5%;
+    animation-delay: -2s;
+}
+
+.blob-3 {
+    width: 70vw;
+    height: 65vh;
+    background: #EE72C5;
+    top: -60%;
+    right: 0;
+    animation-delay: -4s;
+}
+
+.blob-4 {
+    width: 70vw;
+    height: 40vh;
+    background: #F3AED9;
+    bottom: -10%;
+    left: -10%;
+    animation-delay: -1s;
 }
 
 #background-logo {
@@ -62,18 +91,18 @@ body {
     right: 0;
     width: 15%;
     margin: 0 auto;
+    display: none;
 }
 
 #score {
     display: flex;
     justify-content: flex-end;
     align-items: flex-start;
-    padding-right: 20px;
+    padding-right: 1.25rem;
     font-family: "Bodoni";
     font-size: 6rem;
     color: #F3C3E5;
     text-shadow: #765375 0 0 3px;
-
 }
 
 #score-text {
@@ -81,9 +110,8 @@ body {
     font-size: 1.2rem;
     color: #765375;
     text-align: right;
-    padding-top: 20px;
-    padding-right: 20px;
-
+    padding-top: 1.25rem;
+    padding-right: 1.25rem;
 }
 
 .lane-indiv {
@@ -106,7 +134,7 @@ body {
     z-index: 1;
 }
 
-.is-pressed{
+.is-pressed {
     animation: static-arrow-scale 0.3s 1 forwards ease-in-out;
 }
 
@@ -146,45 +174,110 @@ body {
     transform: translate(-50%, -50%) rotate(90deg);
 }
 
-.blob-1 {
-    width: 90vw;
-    height: 40vh;
-    background: #F4C9E3;
-    top: -30%;
-    left: -30%;
-    animation-delay : 0s;
+#modal {
+    width: 700px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background: #DDC9E2;
+    border-radius: 1.25rem;
+    border: 2px solid #F3AED9;
+    box-shadow: #765375 0 0 100px;
+    z-index: 10;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+    padding: 1.5rem 2rem;
+    box-sizing: border-box;
 }
 
-.blob-2 {
-    width: 40vw;
-    height: 85vh;
-    background: #F2AE98;
-    bottom: -20%;
-    right: 5%;
-    animation-delay: -2s;
+#modal-body {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 3rem;
+    width: 100%;
+    margin-bottom: 2rem;
 }
 
-.blob-3 {
-    width: 70vw;
-    height: 65vh;
-    background: #EE72C5;
-    top: -60%;
-    right: 0;
-    animation-delay: -4s;
+#modal-cat {
+    width: auto;
+    height: 200px;
+    object-fit: contain;
 }
 
-.blob-4 {
-    width: 70vw;
-    height: 40vh;
-    background: #F3AED9;
-    bottom: -10%;
-    left: -10%;
-    animation-delay: -1s;
+#modal h1 {
+    font-family: "Electrolize";
+    font-size: 2rem;
+    color: #8E6EC1;
 }
+
+#modal-text {
+    flex: 1;
+    text-align: center;
+}
+
+#modal-text p {
+    font-family: "Electrolize";
+    font-size: 1.15rem;
+    color: #5d497f;
+}
+
+#start-btn {
+    --button_radius: 0.75em;
+    --button_color: #F3AED9;
+    --button_outline_color: #5d497f;
+    font-size: 1.1rem;
+    font-family: "Electrolize";
+    border: none;
+    cursor: pointer;
+    border-radius: var(--button_radius);
+    background: var(--button_outline_color);
+    padding: 0;
+    display: inline-flex;
+}
+
+#button-top {
+    display: block;
+    box-sizing: border-box;
+    border: 2px solid var(--button_outline_color);
+    border-radius: var(--button_radius);
+    padding: 0.75em 1.5em;
+    background: var(--button_color);
+    color: var(--button_outline_color);
+    transform: translateY(-0.2em);
+    transition: transform 0.1s ease;
+}
+
+#start-btn:hover #button-top {
+    transform: translateY(-0.33em);
+}
+
+#start-btn:active #button-top {
+    transform: translateY(0);
+}
+
+#countdown {
+    font-family: "Bodoni";
+    font-size: 12rem;
+    color: #F3AED9;
+    text-shadow: #5d497f 0 0 10px;
+    -webkit-text-stroke: 1px #ac90dd;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+    display: none;
+}
+
 
 @keyframes blobmove {
-    from {transform: translate(0,0) scale(1)}
-    to {transform: translate(120px, 80px) scale(1.5)}
+    from { transform: translate(0, 0) scale(1); }
+    to   { transform: translate(120px, 80px) scale(1.5); }
 }
 
 @keyframes static-arrow-scale {

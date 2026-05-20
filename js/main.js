@@ -82,27 +82,24 @@ const fallingArrows = []
 const arrowColumn = ['left', 'top', 'bottom', 'right']
 
 const spawnArrow = (column) => {
-    if (fallingArrows.length < 2) {
-        const positionLeftStaticArrows = staticPosition[columnMapping[column]].positionLeft
-        const widthStaticArrows = staticPosition[columnMapping[column]].width
+    const columnIndex = columnMapping[column]
+    const alreadyInColumn = fallingArrows.some(arrow => arrow.columnIndex === columnIndex)
+    if (!alreadyInColumn) {
+        const positionLeftStaticArrows = staticPosition[columnIndex].positionLeft
+        const widthStaticArrows = staticPosition[columnIndex].width
         const newArrow = new Arrow(column, (positionLeftStaticArrows + (widthStaticArrows / 2) - (Arrow.width / 2)))
         fallingArrows.push(newArrow)
     }
 }
 
-const scheduleSpawn = (column) => {
-    const delay = Math.random() * 10000 + 5000
+const scheduleSpawn = () => {
+    const delay = Math.random() * 2000 + 1500
     setTimeout(() => {
-        spawnArrow(column)
-        scheduleSpawn(column)
+        const randomColumn = arrowColumn[Math.floor(Math.random() * arrowColumn.length)]
+        spawnArrow(randomColumn)
+        scheduleSpawn()
     }, delay)
 }
-
-arrowColumn.forEach((column) => {
-    const initialDelay = Math.random() * 2000 + 1000
-    setTimeout(() => scheduleSpawn(column), initialDelay)
-})
-
 
 const boardHeight = document.getElementById('board').getBoundingClientRect().height
 
@@ -206,5 +203,39 @@ const playerInput = () => {
 }
 
 
-requestAnimationFrame(fall)
-playerInput()
+const startCountdown = (callback) => {
+    const countdownElm = document.getElementById('countdown')
+    const numberElm = document.getElementById('countdown-number')
+    let count = 3
+    
+    countdownElm.style.display = 'block'
+    numberElm.textContent = count
+
+    const interval = setInterval(() => {
+        count --
+        if (count===0) {
+            numberElm.textContent = 'GO !'
+        } else if (count < 0) {
+            clearInterval(interval)
+            countdownElm.style.display = 'none'
+            callback()
+        } else {
+            numberElm.textContent = count
+        }
+    }, 1000);
+}
+
+const startGame = () => {
+    document.getElementById('modal').style.display='none'
+    document.getElementById('point-container').style.display = 'block'
+
+    startCountdown(() => {
+        scheduleSpawn()
+        requestAnimationFrame(fall)
+        playerInput()
+    })
+}
+
+document.getElementById('start-btn').addEventListener('click', startGame)
+
+
