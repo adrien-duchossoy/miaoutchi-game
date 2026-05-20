@@ -37,7 +37,7 @@ class Arrow {
         this.arrowElm.style.zIndex = '0'
         const arrowImgElm = document.createElement('img')
         arrowImgElm.classList.add('arrow-icon')
-        arrowImgElm.src = '../img/icons/arrow-solidyellow.svg'
+        arrowImgElm.src = './img/icons/arrow-solidyellow.svg'
         const rotationIndex = [-90, 0, 180, 90]
         arrowImgElm.style.transform = `translate(-50%, -50%)
                                     rotate(${rotationIndex[this.columnIndex]}deg)`
