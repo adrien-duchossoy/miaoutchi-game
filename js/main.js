@@ -53,6 +53,137 @@ class Arrow {
     }
 }
 
+class Game {
+    constructor () {
+        this.speed = 300
+        this.currentLevel = 1
+        this.arrowsWon = 0
+        this.levels = [
+            { level: 1, speed: 300, minDelay: 1500, maxDelay: 3500, arrowCount: 10 },
+            { level: 2, speed: 400, minDelay: 1000, maxDelay: 2500, arrowCount: 15 },
+            { level: 3, speed: 500, minDelay: 700,  maxDelay: 1800, arrowCount: 20 },
+        ]
+        this.score = 0
+        this.fallingArrows = []
+        this.staticPosition = []
+        this.lastTime = null
+    }
+
+    spawnArrow (column) {
+        const columnIndex = columnMapping[column]
+        const alreadyInColumn = this.fallingArrows.some(arrow => arrow.columnIndex === columnIndex)
+        if (!alreadyInColumn) {
+            const positionLeftStaticArrows = this.staticPosition[columnIndex].positionLeft
+            const widthStaticArrows = this.staticPosition[columnIndex].width
+            const newArrow = new Arrow(column, (positionLeftStaticArrows + (widthStaticArrows / 2) - (Arrow.width / 2)))
+            this.fallingArrows.push(newArrow)
+        }
+    }
+
+    scheduleSpawn () {
+        const currentLevel = this.levels[this.currentLevel -1]
+        const delay = Math.random() * (currentLevel.maxDelay - currentLevel.minDelay) + currentLevel.minDelay
+        setTimeout(() => {
+            const randomColumn = arrowColumn[Math.floor(Math.random() * arrowColumn.length)]
+            this.spawnArrow(randomColumn)
+            this.scheduleSpawn()
+        }, delay)
+    }
+
+    fall (timestamp) {
+        const currentLevel = this.levels[this.currentLevel - 1]
+        if (!this.lastTime) this.lastTime = timestamp
+        const delta = (timestamp - this.lastTime) / 1000
+        this.lastTime = timestamp
+
+        for (let i = this.fallingArrows.length - 1; i >= 0; i--) {
+            const arrow = this.fallingArrows[i]
+            arrow.positionY += currentLevel.speed * delta
+            arrow.updateUI()
+            if (arrow.positionY > boardHeight) {
+                this.fallingArrows.splice(i, 1)
+                arrow.arrowElm.remove()
+            }
+        }
+
+        this.detectCollision()
+        requestAnimationFrame((timestamp) => this.fall(timestamp))
+    }
+
+    detectCollision () {
+        this.fallingArrows.forEach((arrow) => {
+
+            let collisionProgress = ((arrow.positionY + arrow.height / 2) - this.staticPosition[arrow.columnIndex].positionTop) / this.staticPosition[arrow.columnIndex].height
+            let previousZone = arrow.collisionZone
+            if(collisionProgress >= -0.5 && collisionProgress < 0) {
+                arrow.collisionZone='early'
+            } else if (collisionProgress >= 0 && collisionProgress < 0.4) {
+                arrow.collisionZone='ok_early'
+            } else if (collisionProgress >= 0.4 && collisionProgress < 0.6) {
+                arrow.collisionZone='perfect'
+            } else if (collisionProgress >= 0.6 && collisionProgress < 1){
+                arrow.collisionZone='ok_late'
+            } else if (collisionProgress >= 1) {
+                arrow.collisionZone='missed'
+            } else if (collisionProgress < -0.5) {
+                arrow.collisionZone=null
+            }
+
+            if (arrow.collisionZone === 'missed' && previousZone !== 'missed' && !arrow.hasBeenHit) {
+                this.score -= 20
+                this.updateScore()
+            }
+    })
+    }
+
+    updateScore () {
+        this.score = this.score < 0 ? 0 : this.score
+        const displayedScore = document.getElementById('score-value').textContent = `${this.score}`
+    }
+
+    collisionOnInput (columnOfArrow) {
+        return this.fallingArrows.find((arrow) => arrow.columnIndex === columnOfArrow && arrow.collisionZone)
+    }
+
+    playerInput () {
+        document.addEventListener("keydown", (event) => {
+        const columnIndex = keyMapping[event.code]
+        const staticArrowID = this.staticPosition[columnIndex].arrow
+        const staticArrow = document.getElementById(`${staticArrowID}`)
+
+        staticArrow.classList.add("is-pressed")
+        setTimeout(() => staticArrow.classList.remove("is-pressed"), 300)
+
+        const arrow = this.collisionOnInput(columnIndex)
+        if (!arrow) return
+
+        const isWin = ['ok_early', 'perfect', 'ok_late'].includes(arrow.collisionZone)
+        if (isWin) {
+            staticArrow.classList.add("is-a-win")
+            setTimeout(() => staticArrow.classList.remove("is-a-win"), 300)
+        }
+
+        arrow.hasBeenHit = true
+        this.fallingArrows.splice(this.fallingArrows.indexOf(arrow), 1)
+        arrow.arrowElm.remove()
+        this.score += getScoreFromZone(arrow.collisionZone)
+        this.updateScore()
+    })
+    }
+
+    start () {
+        document.getElementById('modal').style.display='none'
+        document.getElementById('point-container').style.display = 'block'
+        this.staticPosition = getStaticArrowsPosition()
+
+        startCountdown(() => {
+            this.scheduleSpawn()
+            requestAnimationFrame((timestamp) => this.fall(timestamp))
+            this.playerInput()
+        })
+    }
+}
+
 
 
 const getStaticArrowsPosition = () => {
@@ -72,97 +203,12 @@ const getStaticArrowsPosition = () => {
         return staticArrowsPosition
     }
 
-let staticPosition = []
-window.addEventListener('DOMContentLoaded', () => {
-    staticPosition = getStaticArrowsPosition()
-})
-
-
-const fallingArrows = []
 const arrowColumn = ['left', 'top', 'bottom', 'right']
 
-const spawnArrow = (column) => {
-    const columnIndex = columnMapping[column]
-    const alreadyInColumn = fallingArrows.some(arrow => arrow.columnIndex === columnIndex)
-    if (!alreadyInColumn) {
-        const positionLeftStaticArrows = staticPosition[columnIndex].positionLeft
-        const widthStaticArrows = staticPosition[columnIndex].width
-        const newArrow = new Arrow(column, (positionLeftStaticArrows + (widthStaticArrows / 2) - (Arrow.width / 2)))
-        fallingArrows.push(newArrow)
-    }
-}
-
-const scheduleSpawn = () => {
-    const delay = Math.random() * 2000 + 1500
-    setTimeout(() => {
-        const randomColumn = arrowColumn[Math.floor(Math.random() * arrowColumn.length)]
-        spawnArrow(randomColumn)
-        scheduleSpawn()
-    }, delay)
-}
 
 const boardHeight = document.getElementById('board').getBoundingClientRect().height
 
 
-let lastTime = null
-
-const fall = (timestamp) => {
-    if (!lastTime) lastTime = timestamp
-    const delta = (timestamp - lastTime) / 1000
-    lastTime = timestamp
-
-    const speed = 300
-    for (let i = fallingArrows.length - 1; i >= 0; i--) {
-        const arrow = fallingArrows[i]
-        arrow.positionY += speed * delta
-        arrow.updateUI()
-        if (arrow.positionY > boardHeight) {
-            fallingArrows.splice(i, 1)
-            arrow.arrowElm.remove()
-        }
-    }
-
-    detectCollision()
-    requestAnimationFrame(fall)
-}
-
-let score = 0
-
-const detectCollision = () => {
-    fallingArrows.forEach((arrow) => {
-
-        let collisionProgress = ((arrow.positionY + arrow.height / 2) - staticPosition[arrow.columnIndex].positionTop) / staticPosition[arrow.columnIndex].height
-        let previousZone = arrow.collisionZone
-        if(collisionProgress >= -0.5 && collisionProgress < 0) {
-            arrow.collisionZone='early'
-        } else if (collisionProgress >= 0 && collisionProgress < 0.4) {
-            arrow.collisionZone='ok_early'
-        } else if (collisionProgress >= 0.4 && collisionProgress < 0.6) {
-            arrow.collisionZone='perfect'
-        } else if (collisionProgress >= 0.6 && collisionProgress < 1){
-            arrow.collisionZone='ok_late'
-        } else if (collisionProgress >= 1) {
-            arrow.collisionZone='missed'
-        } else if (collisionProgress < -0.5) {
-            arrow.collisionZone=null
-        }
-
-        if (arrow.collisionZone === 'missed' && previousZone !== 'missed' && !arrow.hasBeenHit) {
-            score -= 20
-            updateScore()
-        }
-    })
-}
-
-const collisionOnInput = (columnOfArrow) => {
-    return fallingArrows.find((arrow) => arrow.columnIndex === columnOfArrow && arrow.collisionZone)
-}
-
-
-const updateScore = () => {
-    score = score < 0 ? 0 : score
-    const displayedScore = document.getElementById('score-value').textContent = score
-}
 
 const getScoreFromZone = (zone) => {
     if(zone === 'early'){
@@ -174,32 +220,6 @@ const getScoreFromZone = (zone) => {
     } else if (zone === 'missed') {
         return -20
     }
-}
-
-const playerInput = () => {
-    document.addEventListener("keydown", (event) => {
-        const columnIndex = keyMapping[event.code]
-        const staticArrowID = staticPosition[columnIndex].arrow
-        const staticArrow = document.getElementById(`${staticArrowID}`)
-
-        staticArrow.classList.add("is-pressed")
-        setTimeout(() => staticArrow.classList.remove("is-pressed"), 300)
-
-        const arrow = collisionOnInput(columnIndex)
-        if (!arrow) return
-
-        const isWin = ['ok_early', 'perfect', 'ok_late'].includes(arrow.collisionZone)
-        if (isWin) {
-            staticArrow.classList.add("is-a-win")
-            setTimeout(() => staticArrow.classList.remove("is-a-win"), 300)
-        }
-
-        arrow.hasBeenHit = true
-        fallingArrows.splice(fallingArrows.indexOf(arrow), 1)
-        arrow.arrowElm.remove()
-        score += getScoreFromZone(arrow.collisionZone)
-        updateScore()
-    })
 }
 
 
@@ -225,17 +245,8 @@ const startCountdown = (callback) => {
     }, 1000);
 }
 
-const startGame = () => {
-    document.getElementById('modal').style.display='none'
-    document.getElementById('point-container').style.display = 'block'
 
-    startCountdown(() => {
-        scheduleSpawn()
-        requestAnimationFrame(fall)
-        playerInput()
-    })
-}
-
-document.getElementById('start-btn').addEventListener('click', startGame)
+const game = new Game()
+document.getElementById('start-btn').addEventListener('click', () => game.start())
 
 
