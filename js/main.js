@@ -212,6 +212,10 @@ class Game {
         document.getElementById('point-container').style.display = 'block'
         document.getElementById('level-container').style.display = 'block'
         this.staticPosition = getStaticArrowsPosition()
+        menuMusic.muted = true
+        menuMusic.play().catch(() => {})
+        menuMusic.pause()
+        menuMusic.muted = false
 
         startCountdown(() => {
             this.scheduleSpawn()
@@ -251,6 +255,7 @@ class Game {
         const scoreModalElm = document.getElementById('final-score')
         scoreModalElm.textContent = this.score
         modalEndGameElm.style.display = 'block'
+        fadeOut(gameMusic, () => fadeIn(menuMusic))
     }
 
     restart () {
@@ -266,6 +271,9 @@ class Game {
         this.isPaused = false
         this.currentStreak = 0
         this.arrowsMissed = 0
+        fadeOut(menuMusic, () => fadeIn(gameMusic))
+        menuMusic.currentTime = 0
+        gameMusic.play()
 
         document.getElementById('modal-endgame').style.display = 'none'
         this.updateScore()
@@ -330,6 +338,7 @@ const startCountdown = (callback) => {
         count --
         if (count===0) {
             numberElm.textContent = 'GO !'
+            fadeOut(menuMusic, () => fadeIn(gameMusic))
         } else if (count < 0) {
             clearInterval(interval)
             countdownElm.style.display = 'none'
@@ -393,3 +402,34 @@ document.getElementById('start-btn').addEventListener('click', () => game.start(
 
 document.getElementById('replay-btn').addEventListener('click', () => game.restart())
 
+const menuMusic = new Audio('./audio/waiting-music.mp3')
+const gameMusic = new Audio('./audio/ingame-music.mp3')
+menuMusic.loop = true
+gameMusic.loop = true
+
+const fadeOut = (audio, callback) => {
+    const interval = setInterval(() => {
+        if (audio.volume > 0.05) {
+            audio.volume -= 0.05
+        } else {
+            audio.volume = 0
+            audio.pause()
+            audio.currentTime = 0
+            clearInterval(interval)
+            if (callback) callback()
+        }
+    }, 50)
+}
+
+const fadeIn = (audio) => {
+    audio.volume = 0
+    audio.play()
+    const interval = setInterval(() => {
+        if (audio.volume < 0.95) {
+            audio.volume += 0.05
+        } else {
+            audio.volume = 1
+            clearInterval(interval)
+        }
+    }, 50)
+}
