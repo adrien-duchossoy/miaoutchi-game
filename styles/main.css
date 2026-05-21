@@ -153,7 +153,7 @@ body {
     width: 15vw;
     background-image: url("../img/transparent-lane.svg");
     background-size: 100% 100%;
-    background-position: top center;
+    background-position: bottom center;
     background-repeat: no-repeat;
     display: flex;
     justify-content: center;
@@ -260,7 +260,7 @@ body {
     color: #5d497f;
 }
 
-#start-btn {
+#start-btn, #replay-btn {
     --button_radius: 0.75em;
     --button_color: #F3AED9;
     --button_outline_color: #5d497f;
@@ -274,7 +274,7 @@ body {
     display: inline-flex;
 }
 
-#button-top {
+#button-top, #replay-button-top {
     display: block;
     box-sizing: border-box;
     border: 2px solid var(--button_outline_color);
@@ -290,7 +290,15 @@ body {
     transform: translateY(-0.33em);
 }
 
+#replay-btn:hover #replay-button-top {
+    transform: translateY(-0.33em);
+}
+
 #start-btn:active #button-top {
+    transform: translateY(0);
+}
+
+#replay-btn:active #replay-button-top {
     transform: translateY(0);
 }
 
@@ -306,6 +314,74 @@ body {
     transform: translate(-50%, -50%);
     z-index: 10;
     display: none;
+}
+
+#level-up {
+    font-size: clamp(4rem, 10vw, 12rem);
+}
+
+#modal-endgame {
+    width: 500px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background: #DDC9E2;
+    border-radius: 1.25rem;
+    border: 2px solid #F3AED9;
+    box-shadow: #765375 0 0 100px;
+    z-index: 10;
+    text-align: center;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+    padding: 3rem 2rem;
+    box-sizing: border-box;
+}
+
+#modal-endgame h1 {
+    font-family: "Electrolize";
+    font-size: 3rem;
+    color: #8E6EC1;
+    margin: 0;
+}
+
+#modal-endgame-text p:first-child {
+    font-family: "Electrolize";
+    font-size: 1.2rem;
+    color: #5d497f;
+    margin: 0;
+}
+
+#final-score {
+    font-family: "Bodoni";
+    font-size: clamp(3rem, 8vw, 6rem);
+    color: #F3C3E5;
+    text-shadow: #765375 0 0 3px;
+    margin: 2rem;
+}
+
+#streak-popup {
+    position: absolute;
+    width: 100%;
+    top: 30%;
+    display: block;
+    text-align: center;
+    /* left: 50%;
+    transform: translate(-50%,-50%); */
+}
+
+#img-streak{
+    width: 50%;
+}
+
+.streak-in {
+    animation: streak-effect-in 0.3s forwards ease-in-out;
+}
+
+.streak-out {
+    animation: streak-effect-out 0.3s forwards ease-in-out;
 }
 
 
@@ -324,4 +400,15 @@ body {
     0%   { filter: drop-shadow(0 0 0px #F9CB5E); }
     50%  { filter: drop-shadow(0 0 60px #F9CB5E); }
     100% { filter: drop-shadow(0 0 0px #F9CB5E); }
+}
+
+@keyframes streak-effect-in {
+    0% { transform: scale(1);}
+    50% {transform: scale(1.5);}
+    100% {transform: scale(1);}
+}
+
+@keyframes streak-effect-out {
+    0% { transform: scale(1)}
+    100% {transform: scale(0)}
 }

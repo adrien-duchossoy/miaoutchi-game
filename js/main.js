@@ -71,6 +71,9 @@ class Game {
         this.lastTime = null
         this.isLastArrow = false
         this.isPaused = false
+        this.currentStreak = 0
+        this.arrowsMissed = 0
+        this.streakThreshold = [3, 7, 12, 16, 20, 24, 28, 32, 36, 40, 45, 50, 60, 70, 100, 150, 200]
     }
 
     spawnArrow (column) {
@@ -99,7 +102,7 @@ class Game {
     fall (timestamp) {
         if(this.isPaused) {
             this.lastTime = timestamp
-            requestAnimationFrame((timestamp) => this.fall(timestamp))
+            this.animationFrameId = requestAnimationFrame((timestamp) => this.fall(timestamp))
             return
         }
 
@@ -123,37 +126,39 @@ class Game {
         }
 
         this.detectCollision()
-        requestAnimationFrame((timestamp) => this.fall(timestamp))
+        this.animationFrameId = requestAnimationFrame((timestamp) => this.fall(timestamp))
     }
 
-    detectCollision () {
+    updateCollisionZone(arrow) {
+        const collisionProgress = ((arrow.positionY + arrow.height / 2) - this.staticPosition[arrow.columnIndex].positionTop) / this.staticPosition[arrow.columnIndex].height
+        
+        if (collisionProgress < -0.5) return null
+        if (collisionProgress >= -0.5 && collisionProgress < 0) return 'early'
+        if (collisionProgress >= 0 && collisionProgress < 0.4) return 'ok_early'
+        if (collisionProgress >= 0.4 && collisionProgress < 0.6) return 'perfect'
+        if (collisionProgress >= 0.6 && collisionProgress < 1) return 'ok_late'
+        if (collisionProgress >= 1) return 'missed'
+    }
+
+    handleMiss(arrow) {
+        this.score -= 20
+        this.updateScore()
+        this.arrowsPlayed++
+        this.arrowsMissed++
+        this.currentStreak = 0
+        triggerStreakEffect(this.currentStreak, 'miss')
+        if (this.arrowsMissed >= 5) this.endGame()
+        this.checkArrowsPlayed()
+    }
+
+    detectCollision() {
         this.fallingArrows.forEach((arrow) => {
-
-            let collisionProgress = ((arrow.positionY + arrow.height / 2) - this.staticPosition[arrow.columnIndex].positionTop) / this.staticPosition[arrow.columnIndex].height
-            let previousZone = arrow.collisionZone
-            if(collisionProgress >= -0.5 && collisionProgress < 0) {
-                arrow.collisionZone='early'
-            } else if (collisionProgress >= 0 && collisionProgress < 0.4) {
-                arrow.collisionZone='ok_early'
-            } else if (collisionProgress >= 0.4 && collisionProgress < 0.6) {
-                arrow.collisionZone='perfect'
-            } else if (collisionProgress >= 0.6 && collisionProgress < 1){
-                arrow.collisionZone='ok_late'
-            } else if (collisionProgress >= 1) {
-                arrow.collisionZone='missed'
-            } else if (collisionProgress < -0.5) {
-                arrow.collisionZone=null
-            }
-
+            const previousZone = arrow.collisionZone
+            arrow.collisionZone = this.updateCollisionZone(arrow)
             if (arrow.collisionZone === 'missed' && previousZone !== 'missed' && !arrow.hasBeenHit) {
-                this.score -= 20
-                this.updateScore()
-                this.arrowsPlayed ++
-                if (this.arrowsPlayed >= this.levels[this.currentLevel - 1].arrowCount) {
-                    this.isLastArrow = true
-                }
+                this.handleMiss(arrow)
             }
-    })
+        })
     }
 
     updateScore () {
@@ -181,18 +186,25 @@ class Game {
         if (isWin) {
             staticArrow.classList.add("is-a-win")
             setTimeout(() => staticArrow.classList.remove("is-a-win"), 300)
+            this.currentStreak ++
+            triggerStreakEffect(this.currentStreak, 'streak')
         }
 
         arrow.hasBeenHit = true
+        this.arrowsMissed = 0
         this.arrowsPlayed ++
-        if (this.arrowsPlayed >= this.levels[this.currentLevel - 1].arrowCount) {
-            this.isLastArrow = true
-        }
+        this.checkArrowsPlayed()
         this.fallingArrows.splice(this.fallingArrows.indexOf(arrow), 1)
         arrow.arrowElm.remove()
         this.score += getScoreFromZone(arrow.collisionZone)
         this.updateScore()
     })
+    }
+
+    checkArrowsPlayed () {
+        if (this.arrowsPlayed >= this.levels[this.currentLevel - 1].arrowCount) {
+            this.isLastArrow = true
+        }
     }
 
     start () {
@@ -203,7 +215,7 @@ class Game {
 
         startCountdown(() => {
             this.scheduleSpawn()
-            requestAnimationFrame((timestamp) => this.fall(timestamp))
+            this.animationFrameId = requestAnimationFrame((timestamp) => this.fall(timestamp))
             this.playerInput()
         })
     }
@@ -213,13 +225,8 @@ class Game {
     }
 
     checkLevelUp () {
-        if(this.currentLevel > this.levels.length) {
-            const boardElm = document.getElementById('board')
-
-            //create a real modal for game over
-            const gameOverModal = document.createElement('div')
-            gameOverModal.innerHTML = `Game over`
-            boardElm.appendChild(gameOverModal)
+        if(this.currentLevel >= this.levels.length) {
+            this.endGame ()
             return
         }
 
@@ -231,6 +238,43 @@ class Game {
         levelUp(() => {
             this.isPaused = false
             this.scheduleSpawn()
+        })
+    }
+
+    endGame () {
+        cancelAnimationFrame(this.animationFrameId)
+        this.isPaused = true
+        this.fallingArrows.forEach(arrow => arrow.arrowElm.remove())
+        this.fallingArrows = []
+        isStreakPlaying = false
+        const modalEndGameElm = document.getElementById('modal-endgame')
+        const scoreModalElm = document.getElementById('final-score')
+        scoreModalElm.textContent = this.score
+        modalEndGameElm.style.display = 'block'
+    }
+
+    restart () {
+        cancelAnimationFrame(this.animationFrameId)
+        this.speed = 300
+        this.currentLevel = 1
+        this.arrowsPlayed = 0
+        this.score = 0
+        this.fallingArrows = []
+        this.staticPosition = []
+        this.lastTime = null
+        this.isLastArrow = false
+        this.isPaused = false
+        this.currentStreak = 0
+        this.arrowsMissed = 0
+
+        document.getElementById('modal-endgame').style.display = 'none'
+        this.updateScore()
+        this.updateLevel()
+
+        this.staticPosition = getStaticArrowsPosition()
+        startCountdown(() => {
+            this.scheduleSpawn()
+            this.animationFrameId = requestAnimationFrame((timestamp) => this.fall(timestamp))
         })
     }
 }
@@ -305,10 +349,47 @@ const levelUp = (callback) => {
         levelUpElm.style.display = 'none'
         startCountdown(callback)
     }, 1500) 
+
+
+}
+
+let isStreakPlaying = false
+
+const triggerStreakEffect = (streak, type) => {
+    if ( type === 'streak' && !game.streakThreshold.includes(streak) ) return
+    if (isStreakPlaying) return
+    isStreakPlaying = true
+    const streakPopupElm = document.getElementById('streak-popup')
+    const images = {
+        streak : ['./img/awesome.png',
+            './img/perfect.png',
+            './img/on-fire.png',
+        ],
+        miss : ['./img/oops.png',
+            './img/come-on.png',
+        ],
+    }
+    const randomWinImage = images[type][Math.floor(Math.random() * images[type].length)]
+    const streakImgElm = document.getElementById('img-streak')
+    streakImgElm.classList.remove('streak-in', 'streak-out')
+    streakPopupElm.style.display = 'none'
+    streakImgElm.src = randomWinImage
+    streakImgElm.classList.add('streak-in')
+    streakPopupElm.style.display = 'block'
+    setTimeout(() => {
+        streakImgElm.classList.remove('streak-in')
+        streakImgElm.classList.add('streak-out')
+        streakImgElm.addEventListener('animationend', () => {
+            streakPopupElm.style.display = 'none'
+            streakImgElm.classList.remove('streak-out')
+            isStreakPlaying = false
+        }, { once: true })
+    }, 1000)
 }
 
 
 const game = new Game()
 document.getElementById('start-btn').addEventListener('click', () => game.start())
 
+document.getElementById('replay-btn').addEventListener('click', () => game.restart())
 
