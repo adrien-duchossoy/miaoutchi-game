@@ -85,13 +85,33 @@ body {
     height: 100vh;
 }
 
-#point-container {
+.top-container {
     position: absolute;
     line-height: 0.8;
-    right: 0;
     width: 15%;
     margin: 0 auto;
+    font-family: "Electrolize";
+    font-size: 1.2rem;
+    color: #765375;
+}
+
+#point-container {
+    right: 0;
     display: none;
+}
+
+#level-container {
+    left: 0;
+    display: none;
+}
+
+.top-text {
+    text-align: right;
+    padding-top: 1.25rem;
+    padding-right: 1.25rem;
+    font-family: "Electrolize";
+    font-size: 1.2rem;
+    color: #765375;
 }
 
 #score {
@@ -106,12 +126,26 @@ body {
 }
 
 #score-text {
-    font-family: "Electrolize";
-    font-size: 1.2rem;
-    color: #765375;
     text-align: right;
     padding-top: 1.25rem;
     padding-right: 1.25rem;
+}
+
+#level-text {
+    text-align: left;
+    padding-top: 1.25rem;
+    padding-left: 1.25rem;
+}
+
+#level {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    padding-left: 1.25rem;
+    font-family: "Bodoni";
+    font-size: 6rem;
+    color: #F3C3E5;
+    text-shadow: #765375 0 0 3px;
 }
 
 .lane-indiv {
@@ -260,7 +294,7 @@ body {
     transform: translateY(0);
 }
 
-#countdown {
+#countdown, #level-up {
     font-family: "Bodoni";
     font-size: 12rem;
     color: #F3AED9;
