@@ -338,7 +338,9 @@ const startCountdown = (callback) => {
         count --
         if (count===0) {
             numberElm.textContent = 'GO !'
-            fadeOut(menuMusic, () => fadeIn(gameMusic))
+            if (gameMusic.paused) {
+                fadeOut(menuMusic, () => fadeIn(gameMusic))
+            }
         } else if (count < 0) {
             clearInterval(interval)
             countdownElm.style.display = 'none'
