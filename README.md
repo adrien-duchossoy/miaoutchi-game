@@ -1,8 +1,8 @@
 <div align="center">
   <img src="./img/miaoutchi-dance-logo.svg" alt="Miaoutchi Dance Logo" width="600"/>
   <br/><br/>
-  <img src="./img/miaoutchi.png" alt="Miaoutchi dancing cat" width="150"/>
 </div>
+
 # Miaoutchi Dance Party 🎵
  
 A rhythm game inspired by DDR and Guitar Hero, built entirely with Vanilla JavaScript and DOM manipulation — no frameworks, no libraries.
