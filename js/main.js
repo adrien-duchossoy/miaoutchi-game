@@ -435,3 +435,14 @@ const fadeIn = (audio) => {
         }
     }, 50)
 }
+
+let isMuted = false
+
+const toggleMute = () => {
+    isMuted = !isMuted
+    menuMusic.muted = isMuted
+    gameMusic.muted = isMuted
+    document.getElementById('mute-icon').src = isMuted ? './img/icons/mute-button.svg' : './img/icons/unmute-button.svg'
+}
+
+document.getElementById('mute-btn').addEventListener('click', toggleMute)
